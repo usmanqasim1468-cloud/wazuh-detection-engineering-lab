@@ -1,0 +1,33 @@
+<!--
+  Custom rule that classifies the output of custom_failed_login.
+  Location on the Wazuh manager: /var/ossec/etc/rules/custom_myapp_rules.xml
+
+  Custom rule identifiers start at 100000 so they never collide with the
+  shipped ruleset, which numbers in the tens of thousands.
+
+  Level 10   Places the alert in the high severity band, appropriate for
+             credential attacks and visible in the default views.
+  $(field)   The values extracted by the decoder are interpolated into the
+             description, so an analyst reads the account and source address
+             without opening the full record.
+  T1110      Maps the detection to Brute Force under the Credential Access
+             tactic in MITRE ATT&CK, giving it a place in a framework the
+             wider team already speaks.
+
+  After saving:
+      sudo chown wazuh:wazuh /var/ossec/etc/rules/custom_myapp_rules.xml
+      sudo systemctl restart wazuh-manager
+      sudo /var/ossec/bin/wazuh-logtest
+-->
+
+<group name="my_app">
+
+  <rule id="100003" level="10">
+    <decoded_as>custom_failed_login</decoded_as>
+    <description>Custom App: Failed login attempt detected for user $(username) from $(srcip)</description>
+    <mitre>
+      <id>T1110</id>
+    </mitre>
+  </rule>
+
+</group>
